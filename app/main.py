@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import json
 
 from openai import OpenAI
 
@@ -45,7 +46,7 @@ def main():
 
     response = chat.choices[0].message.tool_calls[0]
     function_name = response.function.name
-    function_params = response.function.arguments
+    function_params = json.loads(response.function.arguments)
     file_path = function_params["file_path"]
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
