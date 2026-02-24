@@ -44,9 +44,13 @@ def main():
     if not chat.choices or len(chat.choices) == 0:
         raise RuntimeError("no choices in response")
 
-    response = chat.choices[0].message.tool_calls[0]
-    function_name = response.function.name
-    function_params = json.loads(response.function.arguments)
+    if chat.choices and chat.choices[0].message.tool_calls:
+        first_tool_call = chat.choices[0].message.tool_calls[0]
+    else:
+        print("No tool calls were found in the response")
+
+    function_name = first_tool_call.function.name
+    function_params = json.loads( first_tool_call.function.arguments)
     file_path = function_params["file_path"]
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
