@@ -40,9 +40,22 @@ def main():
             ]
     )
 
+    response = chat.choice
     if not chat.choices or len(chat.choices) == 0:
         raise RuntimeError("no choices in response")
 
+    response = chat.choices[0].message.tool_calls[0]
+    function_name = response.function.name
+    function_params = response.function.arguments
+    file_path = function_params["file_path"]
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            print(content)
+    except FileNotFoundError:
+        print(f"Error: The file '{file_path}' was not found.")
+    except Exception as e:
+        print(f"An error occured: {e}")
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!", file=sys.stderr)
 
