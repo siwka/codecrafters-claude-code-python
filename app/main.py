@@ -46,20 +46,20 @@ def main():
 
     if chat.choices and chat.choices[0].message.tool_calls:
         first_tool_call = chat.choices[0].message.tool_calls[0]
+        function_name = first_tool_call.function.name
+        function_params = json.loads( first_tool_call.function.arguments)
+        file_path = function_params["file_path"]
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                print(content)
+        except FileNotFoundError:
+            print(f"Error: The file '{file_path}' was not found.")
+        except Exception as e:
+            print(f"An error occured: {e}")
     else:
         print("No tool calls were found in the response")
 
-    function_name = first_tool_call.function.name
-    function_params = json.loads( first_tool_call.function.arguments)
-    file_path = function_params["file_path"]
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            print(content)
-    except FileNotFoundError:
-        print(f"Error: The file '{file_path}' was not found.")
-    except Exception as e:
-        print(f"An error occured: {e}")
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!", file=sys.stderr)
 
