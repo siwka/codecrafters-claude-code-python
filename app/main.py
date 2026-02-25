@@ -132,8 +132,8 @@ def main():
                     elif function_name == 'Bash':
                         #bash_path_dir = "$HOME/Dev/codecrafters-claude-code-python"
                         command = function_params["command"]
-                        print(f'comimand {command}')
-                        print(f'bash - dir: {bash_path_dir}')
+                        print(f'KOMMANDcomimand {command}')
+                        #print(f'bash - dir: {bash_path_dir}')
                         #executable_path = os.path.join(bash_path_dir, command)
                         #print(f'executable : {executable_path}')
                         try:
