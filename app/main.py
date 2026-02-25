@@ -81,7 +81,7 @@ def main():
                             "role": "tool",
                             "tool_call_id": tool_call.id,
                             "content": content
-                            )    
+                            })    
                     # elif function_name == 'Write':
                     #     try:
                     #         with open(file_path, 'a') as f:
