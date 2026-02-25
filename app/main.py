@@ -100,8 +100,8 @@ def main():
                 for tool_call in message.tool_calls:
                     function_name = tool_call.function.name
                     function_params = json.loads(tool_call.function.arguments)
-                    file_path = function_params["file_path"]
                     if function_name == 'Read':
+                        file_path = function_params["file_path"]
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
@@ -115,6 +115,7 @@ def main():
                             "content": content
                             })    
                     elif function_name == 'Write':
+                        file_path = function_params["file_path"]
                         content = function_params["content"]
                         try:
                             with open(file_path, 'a') as f:
@@ -130,8 +131,16 @@ def main():
                             })    
                     elif function_name == 'Bash':
                         command = function_params["command"]
-                        subprocess.run(command)
+                        result = subprocess.run(command,capture_output=True, text=True)
                         print(command)
+                        print("Return code:", result.returncode)
+                        print("Output:", result.stdout)
+                        print("Error:", result.stderr)
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": result
+                            })    
                     else:
                         print("No tool calls were found in the response")
             else:
