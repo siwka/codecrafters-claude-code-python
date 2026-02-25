@@ -19,10 +19,11 @@ def main():
 
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
+    messages=[{"role": "user", "content": args.p}]
     while True:
         chat = client.chat.completions.create(
             model="anthropic/claude-haiku-4.5",
-            messages=[{"role": "user", "content": args.p}],
+            messages=messages,
             tools=[ {"type": "function",
                          "function": {
                            "name": "Read",
@@ -47,7 +48,11 @@ def main():
      
         if chat.choices and chat.choices[0].message:
             message = chat.choices[0].message
-            chat.messages.append(message)
+            messages.append({
+                "role": "assistant",
+                "content": message.content,
+                "tool_calls": [tool_call.model_dump() for tool_call in message.tool_calls or []]
+            })
     
             if message.tool_calls:
                # first_tool_call = chat.choices[0].message.tool_calls[0]
@@ -77,7 +82,7 @@ def main():
                             print(f"Error: The file '{file_path}' was not found.")
                         except Exception as e:
                             print(f"An error occured: {e}")
-                        chat.messages.append({
+                        messages.append({
                             "role": "tool",
                             "tool_call_id": tool_call.id,
                             "content": content
@@ -94,7 +99,9 @@ def main():
                     #     content = subprocess.run([], )
                     else:
                         print("No tool calls were found in the response")
-            break
+            else:
+                print(message.content)
+                break
 
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!", file=sys.stderr)
