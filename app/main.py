@@ -96,7 +96,7 @@ def main():
                             "content": content
                             })    
                     elif function_name == 'Write':
-                        function_properties = json.loads(tool_call.function.paramenters.properties)
+                        function_properties = json.loads(tool_call.function.parameters.properties)
                         file_path = function_properties["file_path"]
                         content = function_properties["content"]
                         try:
