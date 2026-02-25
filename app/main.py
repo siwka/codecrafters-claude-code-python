@@ -19,47 +19,82 @@ def main():
 
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
-    chat = client.chat.completions.create(
-        model="anthropic/claude-haiku-4.5",
-        messages=[{"role": "user", "content": args.p}],
-        tools=[ {"type": "function",
-                     "function": {
-                       "name": "Read",
-                       "description": "Read and return the contents of a file",
-                       "parameters": {
-                           "type": "object",
-                           "properties": {
-                             "file_path": {
-                               "type": "string",
-                               "description": "The path to the file to read"
-                             }
-                           },
-                           "required": ["file_path"]
+    while True:
+        chat = client.chat.completions.create(
+            model="anthropic/claude-haiku-4.5",
+            messages=[{"role": "user", "content": args.p}],
+            tools=[ {"type": "function",
+                         "function": {
+                           "name": "Read",
+                           "description": "Read and return the contents of a file",
+                           "parameters": {
+                               "type": "object",
+                               "properties": {
+                                 "file_path": {
+                                   "type": "string",
+                                   "description": "The path to the file to read"
+                                 }
+                               },
+                               "required": ["file_path"]
+                           }
+                         }
                        }
-                     }
-                   }
-            ]
-    )
-
-    if not chat.choices or len(chat.choices) == 0:
-        raise RuntimeError("no choices in response")
-
-    if chat.choices and chat.choices[0].message.tool_calls:
-        first_tool_call = chat.choices[0].message.tool_calls[0]
-        function_name = first_tool_call.function.name
-        function_params = json.loads( first_tool_call.function.arguments)
-        file_path = function_params["file_path"]
-        if function_name == 'Read':
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    print(content)
-            except FileNotFoundError:
-                print(f"Error: The file '{file_path}' was not found.")
-            except Exception as e:
-                print(f"An error occured: {e}")
-        else:
-            print("No tool calls were found in the response")
+                ]
+        )
+    
+        if not chat.choices or len(chat.choices) == 0:
+            raise RuntimeError("no choices in response")
+     
+        if chat.choices and chat.choices[0].message:
+            message = chat.choices[0].message
+            messages.append(message)
+    
+            if message.tool_calls:
+               # first_tool_call = chat.choices[0].message.tool_calls[0]
+               # function_name = first_tool_call.function.name
+               # function_params = json.loads( first_tool_call.function.arguments)
+               # file_path = function_params["file_path"]
+               # if function_name == 'Read':
+               #     try:
+               #         with open(file_path, 'r', encoding='utf-8') as f:
+               #             content = f.read()
+               #             print(content)
+               #     except FileNotFoundError:
+               #         print(f"Error: The file '{file_path}' was not found.")
+               #     except Exception as e:
+               #         print(f"An error occured: {e}")
+               # else:
+               #     print("No tool calls were found in the response")
+                for tool_call in message.tool_calls:
+                    function_name = tool_call.function.name
+                    function_params = json.loads(tool_call.function.arguments)
+                    file_path = function_params["file_path"]
+                    if function_name == 'Read':
+                        try:
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                        except FileNotFoundError:
+                            print(f"Error: The file '{file_path}' was not found.")
+                        except Exception as e:
+                            print(f"An error occured: {e}")
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": content
+                            )    
+                    # elif function_name == 'Write':
+                    #     try:
+                    #         with open(file_path, 'a') as f:
+                    #             content = f.write("find the content???? docs") 
+                    #     except FileNotFoundError:
+                    #         print(f"Error: The file '{file_path}' was not found.")
+                    #     except Exception as e:
+                    #         print(f"An error occured: {e}")
+                    # elif function_name == 'Bash':
+                    #     content = subprocess.run([], )
+                    else:
+                        print("No tool calls were found in the response")
+            break
 
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!", file=sys.stderr)
