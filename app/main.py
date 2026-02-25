@@ -80,9 +80,9 @@ def main():
             if message.tool_calls:
                 for tool_call in message.tool_calls:
                     function_name = tool_call.function.name
+                    function_params = json.loads(tool_call.function.arguments)
+                    file_path = function_params["file_path"]
                     if function_name == 'Read':
-                        function_params = json.loads(tool_call.function.arguments)
-                        file_path = function_params["file_path"]
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
@@ -96,9 +96,7 @@ def main():
                             "content": content
                             })    
                     elif function_name == 'Write':
-                        function_properties = json.loads(tool_call.function.parameters.properties)
-                        file_path = function_properties["file_path"]
-                        content = function_properties["content"]
+                        content = function_params["content"]
                         try:
                             with open(file_path, 'a') as f:
                                 f.write(content) 
