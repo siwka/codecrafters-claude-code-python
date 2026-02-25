@@ -135,7 +135,7 @@ def main():
                         print(f'comimand {command}')
                         print(f'bash - dir: {bash_path_dir}')
                         executable_path = os.path.join(bash_path_dir, command)
-                        print(f'executable : {executable_path}'}
+                        print(f'executable : {executable_path}')
                         try:
                             result = subprocess.run([executable_path, "arg1", "arg2"], check=True, capture_output=True, text=True)
                             print("STDOUT:", result.stdout)
