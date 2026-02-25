@@ -19,28 +19,51 @@ def main():
 
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
+    tool_read = {"type": "function",
+                 "function": {
+                   "name": "Read",
+                   "description": "Read and return the contents of a file",
+                   "parameters": {
+                       "type": "object",
+                       "properties": {
+                         "file_path": {
+                           "type": "string",
+                           "description": "The path to the file to read"
+                         }
+                       },
+                       "required": ["file_path"]
+                   }
+                 }
+               }
+    
+    tool_write = {
+      "type": "function",
+      "function": {
+        "name": "Write",
+        "description": "Write content to a file",
+        "parameters": {
+          "type": "object",
+          "required": ["file_path", "content"],
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "description": "The path of the file to write to"
+            },
+            "content": {
+              "type": "string",
+              "description": "The content to write to the file"
+            }
+          }
+        }
+      }
+    }
+
     messages=[{"role": "user", "content": args.p}]
     while True:
         chat = client.chat.completions.create(
             model="anthropic/claude-haiku-4.5",
             messages=messages,
-            tools=[ {"type": "function",
-                         "function": {
-                           "name": "Read",
-                           "description": "Read and return the contents of a file",
-                           "parameters": {
-                               "type": "object",
-                               "properties": {
-                                 "file_path": {
-                                   "type": "string",
-                                   "description": "The path to the file to read"
-                                 }
-                               },
-                               "required": ["file_path"]
-                           }
-                         }
-                       }
-                ]
+            tools=[tool_read, tool_write ]
         )
     
         if not chat.choices or len(chat.choices) == 0:
@@ -78,7 +101,7 @@ def main():
                         content = function_properties["content"]
                         try:
                             with open(file_path, 'a') as f:
-                                content = f.write(content) 
+                                f.write(content) 
                         except FileNotFoundError:
                             print(f"Error: The file '{file_path}' was not found.")
                         except Exception as e:
