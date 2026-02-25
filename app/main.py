@@ -143,8 +143,8 @@ def main():
                             print("STDOUT:", e.stdout)
                             print("STDERR:", e.stderr)
                         except FileNotFoundError:
-                        print(f"The executable 'command_name' was not found in the PATH. Ensure '{bash_path_dir}' is correct.")
-                        print(command)
+                            print(f"The executable 'command_name' was not found in the PATH. Ensure '{bash_path_dir}' is correct.")
+                            print(command)
                         messages.append({
                             "role": "tool",
                             "tool_call_id": tool_call.id,
