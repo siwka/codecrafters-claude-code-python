@@ -87,16 +87,6 @@ def main():
                             "tool_call_id": tool_call.id,
                             "content": content
                             })    
-                    # elif function_name == 'Write':
-                    #     try:
-                    #         with open(file_path, 'a') as f:
-                    #             content = f.write("find the content???? docs") 
-                    #     except FileNotFoundError:
-                    #         print(f"Error: The file '{file_path}' was not found.")
-                    #     except Exception as e:
-                    #         print(f"An error occured: {e}")
-                    # elif function_name == 'Bash':
-                    #     content = subprocess.run([], )
                     else:
                         print("No tool calls were found in the response")
             else:
