@@ -133,22 +133,24 @@ def main():
                         bash_path_dir = "$HOME/Dev/codecrafters-claude-code-python"
                         command = function_params["command"]
                         executable_path = bash_path_dir + command
-                        # Create a copy of the current environment variables
                         try:
                             result = subprocess.run([executable_path, "arg1", "arg2"], check=True, capture_output=True, text=True)
                             print("STDOUT:", result.stdout)
                             print("STDERR:", result.stderr)
+                            content = result
                         except subprocess.CalledProcessError as e:
                             print(f"Command failed with return code {e.returncode}")
                             print("STDOUT:", e.stdout)
                             print("STDERR:", e.stderr)
+                            content = e
                         except FileNotFoundError:
                             print(f"The executable 'command_name' was not found in the PATH. Ensure '{bash_path_dir}' is correct.")
                             print(command)
+                            content = "FileNotFoundError"
                         messages.append({
                             "role": "tool",
                             "tool_call_id": tool_call.id,
-                            "content": result
+                            "content": content
                             })    
                     else:
                         print("No tool calls were found in the response")
