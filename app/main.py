@@ -159,7 +159,7 @@ def main():
                         messages.append({
                             "role": "tool",
                             "tool_call_id": tool_call.id,
-                            "content": content
+                            "content": result
                             })    
                     else:
                         print("No tool calls were found in the response")
