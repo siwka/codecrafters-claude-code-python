@@ -132,6 +132,8 @@ def main():
                     elif function_name == 'Bash':
                         bash_path_dir = "$HOME/Dev/codecrafters-claude-code-python"
                         command = function_params["command"]
+                        print(f'comimand {command}'}
+                        print(f'bash - dir: {bash_path_dir}'}
                         executable_path = os.path.join(bash_path_dir, command)
                         try:
                             result = subprocess.run([executable_path, "arg1", "arg2"], check=True, capture_output=True, text=True)
