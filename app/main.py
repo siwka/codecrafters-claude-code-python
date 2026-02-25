@@ -55,26 +55,11 @@ def main():
             })
     
             if message.tool_calls:
-               # first_tool_call = chat.choices[0].message.tool_calls[0]
-               # function_name = first_tool_call.function.name
-               # function_params = json.loads( first_tool_call.function.arguments)
-               # file_path = function_params["file_path"]
-               # if function_name == 'Read':
-               #     try:
-               #         with open(file_path, 'r', encoding='utf-8') as f:
-               #             content = f.read()
-               #             print(content)
-               #     except FileNotFoundError:
-               #         print(f"Error: The file '{file_path}' was not found.")
-               #     except Exception as e:
-               #         print(f"An error occured: {e}")
-               # else:
-               #     print("No tool calls were found in the response")
                 for tool_call in message.tool_calls:
                     function_name = tool_call.function.name
-                    function_params = json.loads(tool_call.function.arguments)
-                    file_path = function_params["file_path"]
                     if function_name == 'Read':
+                        function_params = json.loads(tool_call.function.arguments)
+                        file_path = function_params["file_path"]
                         try:
                             with open(file_path, 'r', encoding='utf-8') as f:
                                 content = f.read()
@@ -87,6 +72,24 @@ def main():
                             "tool_call_id": tool_call.id,
                             "content": content
                             })    
+                    elif function_name == 'Write':
+                        function_properties = json.loads(tool_call.function.paramenters.properties)
+                        file_path = function_properties["file_path"]
+                        content = function_properties["content"]
+                        try:
+                            with open(file_path, 'a') as f:
+                                content = f.write(content) 
+                        except FileNotFoundError:
+                            print(f"Error: The file '{file_path}' was not found.")
+                        except Exception as e:
+                            print(f"An error occured: {e}")
+                        messages.append({
+                            "role": "tool",
+                            "tool_call_id": tool_call.id,
+                            "content": content
+                            })    
+                    #elif function_name == 'Bash':
+                    #    content = subprocess.run([], )
                     else:
                         print("No tool calls were found in the response")
             else:
