@@ -130,12 +130,7 @@ def main():
                             "content": content
                             })    
                     elif function_name == 'Bash':
-                        #bash_path_dir = "$HOME/Dev/codecrafters-claude-code-python"
                         command = function_params["command"]
-                        print(f'KOMMANDcomimand {command}')
-                        #print(f'bash - dir: {bash_path_dir}')
-                        #executable_path = os.path.join(bash_path_dir, command)
-                        #print(f'executable : {executable_path}')
                         try:
                             completed = subprocess.run(
                             command,
@@ -143,11 +138,6 @@ def main():
                             capture_output=True,
                             text=True,
                             )
-                            #result = subprocess.run([executable_path, "arg1", "arg2"], check=True, capture_output=True, text=True)
-                            #result = subprocess.run(command, check=True, capture_output=True, text=True)
-                            #print("STDOUT:", result.stdout)
-                            #print("STDERR:", result.stderr)
-                            #content = result
                         except subprocess.CalledProcessError as e:
                             print(f"Command failed with return code {e.returncode}")
                             print("STDOUT:", e.stdout)
