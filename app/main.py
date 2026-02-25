@@ -47,7 +47,7 @@ def main():
      
         if chat.choices and chat.choices[0].message:
             message = chat.choices[0].message
-            messages.append(message)
+            chat.messages.append(message)
     
             if message.tool_calls:
                # first_tool_call = chat.choices[0].message.tool_calls[0]
@@ -77,7 +77,7 @@ def main():
                             print(f"Error: The file '{file_path}' was not found.")
                         except Exception as e:
                             print(f"An error occured: {e}")
-                        messages.append({
+                        chat.messages.append({
                             "role": "tool",
                             "tool_call_id": tool_call.id,
                             "content": content
