@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import json
+import subprocess
 
 from openai import OpenAI
 
@@ -19,7 +20,7 @@ def main():
 
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
-    tool_read = {"type": "function",
+    read_file = {"type": "function",
                  "function": {
                    "name": "Read",
                    "description": "Read and return the contents of a file",
@@ -36,7 +37,7 @@ def main():
                  }
                }
     
-    tool_write = {
+    write_file = {
       "type": "function",
       "function": {
         "name": "Write",
@@ -58,12 +59,30 @@ def main():
       }
     }
 
+    run_bash_command = {
+      "type": "function",
+      "function": {
+        "name": "Bash",
+        "description": "Execute a shell command",
+        "parameters": {
+          "type": "object",
+          "required": ["command"],
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "The command to execute"
+            }
+          }
+        }
+      }
+    }
+
     messages=[{"role": "user", "content": args.p}]
     while True:
         chat = client.chat.completions.create(
             model="anthropic/claude-haiku-4.5",
             messages=messages,
-            tools=[tool_read, tool_write ]
+            tools=[read_file, write_file, run_bash_command]
         )
     
         if not chat.choices or len(chat.choices) == 0:
@@ -109,8 +128,10 @@ def main():
                             "tool_call_id": tool_call.id,
                             "content": content
                             })    
-                    #elif function_name == 'Bash':
-                    #    content = subprocess.run([], )
+                    elif function_name == 'Bash':
+                        command = function_params["command"]
+                        subprocess.run(command)
+                        print(command)
                     else:
                         print("No tool calls were found in the response")
             else:
