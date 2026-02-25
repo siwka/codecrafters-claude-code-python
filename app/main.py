@@ -130,27 +130,32 @@ def main():
                             "content": content
                             })    
                     elif function_name == 'Bash':
-                        bash_path_dir = "$HOME/Dev/codecrafters-claude-code-python"
+                        #bash_path_dir = "$HOME/Dev/codecrafters-claude-code-python"
                         command = function_params["command"]
                         print(f'comimand {command}')
                         print(f'bash - dir: {bash_path_dir}')
-                        executable_path = os.path.join(bash_path_dir, command)
-                        print(f'executable : {executable_path}')
+                        #executable_path = os.path.join(bash_path_dir, command)
+                        #print(f'executable : {executable_path}')
                         try:
+                            completed = subprocess.run(
+                            command,
+                            shell=True,
+                            capture_output=True,
+                            text=True,
+                            )
                             #result = subprocess.run([executable_path, "arg1", "arg2"], check=True, capture_output=True, text=True)
-                            result = subprocess.run(command, check=True, capture_output=True, text=True)
-                            print("STDOUT:", result.stdout)
-                            print("STDERR:", result.stderr)
-                            content = result
+                            #result = subprocess.run(command, check=True, capture_output=True, text=True)
+                            #print("STDOUT:", result.stdout)
+                            #print("STDERR:", result.stderr)
+                            #content = result
                         except subprocess.CalledProcessError as e:
                             print(f"Command failed with return code {e.returncode}")
                             print("STDOUT:", e.stdout)
                             print("STDERR:", e.stderr)
-                            content = e
                         except FileNotFoundError:
                             print(f"The executable 'command_name' was not found in the PATH. Ensure '{bash_path_dir}' is correct.")
                             print(command)
-                            content = "FileNotFoundError"
+                        result = (completed.stdout or "") + (completed.stderr or "")
                         messages.append({
                             "role": "tool",
                             "tool_call_id": tool_call.id,
